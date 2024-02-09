@@ -12,7 +12,7 @@ def clean_data(df):
     drop_indices, drop_images_id = [], []
     print('[INFO]: Checking if all images are present')
     for index, image_id in tqdm(df.iterrows()):
-        if not os.path.exists(f"./data/images-all/{image_id.id}.jpg"):
+        if not os.path.exists(f"./data/images/{image_id.id}.jpg"):
             drop_indices.append(index)
             drop_images_id.append(f"{image_id.id}.jpg")
         # Nan 전처리
@@ -46,4 +46,3 @@ def save_loss_plot(train_loss, val_loss):
     plt.ylabel('Loss')
     plt.legend()
     plt.savefig('./loss.jpg')
-    plt.show()

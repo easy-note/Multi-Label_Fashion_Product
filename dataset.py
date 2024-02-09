@@ -14,13 +14,15 @@ def train_val_split(df):
     df = df.sample(frac=1).reset_index(drop=True)
 
     # 90% for training and 10% for validation
-    num_train_samples = math.floor(len(df) * 0.90)
+    num_train_samples = math.floor(len(df) * 0.80)
     num_val_samples = math.floor(len(df) * 0.10)
+    num_test_samples = math.floor(len(df) * 0.10)
 
     train_df = df[:num_train_samples].reset_index(drop=True)
-    val_df = df[-num_val_samples:].reset_index(drop=True)
+    val_df = df[-(num_val_samples+num_test_samples):-num_test_samples].reset_index(drop=True)
+    test_df = df[-num_test_samples:].reset_index(drop=True)
 
-    return train_df, val_df
+    return train_df, val_df, test_df
 
 class FashionDataset(Dataset):
     def __init__(self, df, is_train=True):
@@ -57,7 +59,7 @@ class FashionDataset(Dataset):
         return len(self.df)
     
     def __getitem__(self, index):
-        image = cv2.imread(f"./data/images-all/{self.df['id'][index]}.jpg")
+        image = cv2.imread(f"./data/images/{self.df['id'][index]}.jpg")
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = self.transform(image)
 
