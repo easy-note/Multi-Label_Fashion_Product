@@ -1,3 +1,4 @@
+from cmath import nan
 import os
 import torch
 import matplotlib.pyplot as plt
@@ -8,13 +9,22 @@ from tqdm import tqdm
 matplotlib.style.use('ggplot')
 
 def clean_data(df):
-    drop_indices = []
+    drop_indices, drop_images_id = [], []
     print('[INFO]: Checking if all images are present')
     for index, image_id in tqdm(df.iterrows()):
-        if not os.path.exists(f"./data/images/{image_id.id}.jpg"):
+        if not os.path.exists(f"./data/images-all/{image_id.id}.jpg"):
             drop_indices.append(index)
-
+            drop_images_id.append(f"{image_id.id}.jpg")
+        # Nan 전처리
+        if image_id.gender == '' \
+            or image_id.articleType == '' \
+            or image_id.season == '' \
+            or image_id.usage == '':
+            drop_indices.append(index)
+            drop_images_id.append(f"{image_id.id}.jpg")
+            
     print(f"[INFO]: Dropping indices: {drop_indices}")
+    print(f"[INFO]: Dropping image ids: {drop_images_id}")
     df.drop(df.index[drop_indices], inplace=True)
     return df
 

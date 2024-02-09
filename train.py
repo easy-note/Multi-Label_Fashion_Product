@@ -20,7 +20,7 @@ criterion = loss_fn
 batch_size = 32
 epochs = 40
 
-df = pd.read_csv('./data/styles.csv', usecols=[0, 1, 2, 3, 4, 4, 5, 6, 9])
+df = pd.read_csv('./data/styles.csv', usecols=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], keep_default_na=False)
 train_data, val_data = train_val_split(df)
 print(f"[INFO]: Number of training sampels: {len(train_data)}")
 print(f"[INFO]: Number of validation sampels: {len(val_data)}")
@@ -36,6 +36,8 @@ val_dataloader = DataLoader(
     val_dataset, batch_size=batch_size, shuffle=False
 )
 
+device = 'cpu'
+
 # training function
 def train(model, dataloader, optimizer, loss_fn, dataset, device):
     model.train()
@@ -47,14 +49,15 @@ def train(model, dataloader, optimizer, loss_fn, dataset, device):
         # extract the features and labels
         image = data['image'].to(device)
         gender = data['gender'].to(device)
-        master = data['master'].to(device)
-        sub = data['sub'].to(device)
+        articleType = data['articleType'].to(device)
+        season = data['season'].to(device)
+        usage = data['usage'].to(device)
         
         # zero-out the optimizer gradients
         optimizer.zero_grad()
         
         outputs = model(image)
-        targets = (gender, master, sub)
+        targets = (gender, articleType, season, usage)
         loss = loss_fn(outputs, targets)
         train_running_loss += loss.item()
         
@@ -77,11 +80,12 @@ def validate(model, dataloader, loss_fn, dataset, device):
         # extract the features and labels
         image = data['image'].to(device)
         gender = data['gender'].to(device)
-        master = data['master'].to(device)
-        sub = data['sub'].to(device)
+        articleType = data['articleType'].to(device)
+        season = data['season'].to(device)
+        usage = data['usage'].to(device)
         
         outputs = model(image)
-        targets = (gender, master, sub)
+        targets = (gender, articleType, season, usage)
         loss = loss_fn(outputs, targets)
         val_running_loss += loss.item()
         

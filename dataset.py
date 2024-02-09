@@ -26,8 +26,9 @@ class FashionDataset(Dataset):
     def __init__(self, df, is_train=True):
         self.df = df
         self.num_list_gender = joblib.load('./num_list_gender.pkl')
-        self.num_list_master = joblib.load('./num_list_master.pkl')
-        self.num_list_sub = joblib.load('./num_list_sub.pkl')
+        self.num_list_articletype = joblib.load('./num_list_articletype.pkl')
+        self.num_list_season = joblib.load('./num_list_season.pkl')
+        self.num_list_usage = joblib.load('./num_list_usage.pkl')
         self.is_train = is_train
 
         # the training transforms and augmentations
@@ -56,29 +57,34 @@ class FashionDataset(Dataset):
         return len(self.df)
     
     def __getitem__(self, index):
-        image = cv2.imread(f"../input/fashion-product-images-small/images/{self.df['id'][index]}.jpg")
+        image = cv2.imread(f"./data/images-all/{self.df['id'][index]}.jpg")
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = self.transform(image)
 
         cat_gender = self.df['gender'][index]
         label_gender = self.num_list_gender[cat_gender]
 
-        cat_master = self.df['masterCategory'][index]
-        label_master = self.num_list_master[cat_master]
+        cat_articletype = self.df['articleType'][index]
+        label_articletype = self.num_list_articletype[cat_articletype]
 
-        cat_sub = self.df['subCategory'][index]
-        label_sub = self.num_list_sub[cat_sub]
+        cat_season = self.df['season'][index]
+        label_season = self.num_list_season[cat_season]
+        
+        cat_usage = self.df['usage'][index]
+        label_usage = self.num_list_usage[cat_usage]
 
         # image to float32 tensor
         image = torch.tensor(image, dtype=torch.float32)
         # labels to long tensors
         label_gender = torch.tensor(label_gender, dtype=torch.long)
-        label_master = torch.tensor(label_master, dtype=torch.long)
-        label_sub = torch.tensor(label_sub, dtype=torch.long)
+        label_articletype = torch.tensor(label_articletype, dtype=torch.long)
+        label_season = torch.tensor(label_season, dtype=torch.long)
+        label_usage = torch.tensor(label_usage, dtype=torch.long)
         
         return {
             'image': image,
             'gender': label_gender,
-            'master': label_master,
-            'sub': label_sub
+            'articleType': label_articletype,
+            'season': label_season,
+            'usage': label_usage
         }

@@ -1,3 +1,6 @@
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 import torch.nn as nn
 import torch.nn.functional as F
 import pretrainedmodels
@@ -10,7 +13,6 @@ class MultiHeadResNet50(nn.Module):
         else:
             self.model = pretrainedmodels.__dict__['resnet50'](pretrained=None)
 
-
         if requires_grad == True:
             for param in self.model.parameters():
                 param.requires_grad = True
@@ -21,17 +23,19 @@ class MultiHeadResNet50(nn.Module):
             print('Freezing intermediate layer parameters...')
 
         # change the final layer
-        self.l0 = nn.Linear(2048, 5)
-        self.l1 = nn.Linear(2048, 7)
-        self.l2 = nn.Linear(2048, 45)
+        self.layer_gender = nn.Linear(2048, 5)
+        self.layer_articletype = nn.Linear(2048, 142)
+        self.layer_season = nn.Linear(2048, 4)
+        self.layer_usage = nn.Linear(2048, 9)
         
     def forward(self, x):
         # get the batch size only, ignore (c, h, w)
         batch, _, _, _ = x.shape
         x = self.model.features(x)
         x = F.adaptive_avg_pool2d(x, 1).reshape(batch, -1)
-        l0 = self.l0(x)
-        l1 = self.l1(x)
-        l2 = self.l2(x)
-        return l0, l1, l2
+        layer_gender = self.layer_gender(x)
+        layer_articletype = self.layer_articletype(x)
+        layer_season = self.layer_season(x)
+        layer_usage = self.layer_usage(x)
+        return layer_gender, layer_articletype, layer_season, layer_usage
   
