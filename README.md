@@ -18,13 +18,17 @@
     - 메타 데이터 : https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small?select=styles.csv
     - 이미지 데이터 : https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small?select=images
 
-2. label dictionary 생성
+2. 환경 내 requirements 패키지 설치
+```
+pip install -r requirements.txt
+```
+3. label dictionary 생성
 ```
 python label_dicts.py
 ```
-3. 학습 및 추론
+4. 학습 및 추론
 ```
-python train.py
+python run.py
 ```
 ---
 ## **사용 모델 및 하이퍼 파라미터**
